@@ -3,7 +3,7 @@ import { User } from 'src/app/_models/user';
 import { UserService } from 'src/app/_services/user.service';
 import { AlertifyService } from 'src/app/_services/alertify.service';
 import { ActivatedRoute } from '@angular/router';
-import { NgxGalleryAction, NgxGalleryImage, NgxGalleryAnimation } from 'ngx-gallery';
+import { NgxGalleryAction, NgxGalleryImage, NgxGalleryAnimation, NgxGalleryOptions } from 'ngx-gallery';
 
 @Component({
   selector: 'app-member-detail',
@@ -12,7 +12,7 @@ import { NgxGalleryAction, NgxGalleryImage, NgxGalleryAnimation } from 'ngx-gall
 })
 export class MemberDetailComponent implements OnInit {
   user: User;
-  galleryOptions: NgxGalleryAction[];
+  galleryOptions: NgxGalleryOptions[];
   galleryImages: NgxGalleryImage[];
 
   constructor(private userService: UserService, private alertify: AlertifyService,
@@ -29,7 +29,7 @@ export class MemberDetailComponent implements OnInit {
         height: '500px',
         imagePercent: 100,
         thumbnailsColumns: 4,
-        imageAnnimation: NgxGalleryAnimation.Slide,
+        imageAnimation: NgxGalleryAnimation.Slide,
         preview: false
       }
     ];
