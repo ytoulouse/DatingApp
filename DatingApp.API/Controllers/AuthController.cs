@@ -3,6 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using DatingApp.API.Data;
 using DatingApp.API.Dtos;
 using DatingApp.API.Models;
@@ -19,9 +20,11 @@ namespace DatingApp.API.Controllers
     {
         private readonly IAuthRepository _repo;
         private readonly IConfiguration _config;
+        private readonly IMapper _mapper;
 
-        public AuthController(IAuthRepository repo, IConfiguration config)
+        public AuthController(IAuthRepository repo, IConfiguration config, IMapper mapper)
         {
+            _mapper = mapper;
             _repo = repo;
             _config = config;
         }
@@ -29,16 +32,16 @@ namespace DatingApp.API.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(UserForRegisterDto userForRegisterDto)
         {
-           if (userForRegisterDto == null)
+            if (userForRegisterDto == null)
             {
-               throw new ArgumentNullException(nameof(userForRegisterDto));
+                throw new ArgumentNullException(nameof(userForRegisterDto));
             }
             userForRegisterDto.Username = userForRegisterDto.Username.ToLower();
 
             if (await _repo.UserExists(userForRegisterDto.Username))
-            return BadRequest("Username already exists");
+                return BadRequest("Username already exists");
 
-            var userToCreate = new User 
+            var userToCreate = new User
             {
                 Username = userForRegisterDto.Username
             };
@@ -53,7 +56,7 @@ namespace DatingApp.API.Controllers
             var userFromRepo = await _repo.Login(userForLoginDto.Username.ToLower(), userForLoginDto.Password);
 
             if (userFromRepo == null)
-            return Unauthorized();
+                return Unauthorized();
 
             var claims = new[]
             {
@@ -77,12 +80,16 @@ namespace DatingApp.API.Controllers
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
-            return Ok(new {
-                token = tokenHandler.WriteToken(token)
+            var user = _mapper.Map<UserForListDto>(userFromRepo);
+
+            return Ok(new
+            {
+                token = tokenHandler.WriteToken(token),
+                user
             });
-                       
+
         }
-        
+
     }
 
 }
